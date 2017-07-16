@@ -53,7 +53,15 @@ switch( userInputs[2] )
 //=======================
 function getTweets()
 {
+    const twitterClient = new twitter( twitterKeys );
 
+    twitterClient.get( 'statuses/user_timeline', onTwitterComplete )
+    //console.log( twitterClient );
+
+    function onTwitterComplete( tError, tData )
+    {
+        console.log( tData );
+    }
 }
 
 function getSpotifySong()
