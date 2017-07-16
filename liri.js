@@ -60,7 +60,19 @@ function getTweets()
 
     function onTwitterComplete( tError, tData )
     {
-        console.log( tData );
+        if( !tError )
+        {
+            console.log( colors.bold( '\nMY LATEST TWEETS:\n' ) );
+            
+            for( let i = 0; i < tData.length; ++i )
+            {
+                console.log( tData[i].text );    
+            }
+        }
+        else
+        {
+            console.log( "There was an error with Twitter: " + tError );
+        }
     }
 }
 
