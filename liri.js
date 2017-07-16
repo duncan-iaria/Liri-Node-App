@@ -53,7 +53,27 @@ switch( userInputs[2] )
 //=======================
 function getTweets()
 {
+    const twitterClient = new twitter( twitterKeys );
 
+    twitterClient.get( 'statuses/user_timeline', onTwitterComplete )
+    //console.log( twitterClient );
+
+    function onTwitterComplete( tError, tData )
+    {
+        if( !tError )
+        {
+            console.log( colors.bold( '\nMY LATEST TWEETS:\n' ) );
+            
+            for( let i = 0; i < tData.length; ++i )
+            {
+                console.log( tData[i].text );    
+            }
+        }
+        else
+        {
+            console.log( "There was an error with Twitter: " + tError );
+        }
+    }
 }
 
 function getSpotifySong()
