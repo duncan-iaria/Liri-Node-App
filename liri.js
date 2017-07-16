@@ -9,6 +9,9 @@ const spotify = require( 'node-spotify-api' );
 const colors = require( 'colors' );
 
 const twitterKeys = keys.twitterKeys;
+const spotifyKeys = keys.spotifyKeys;
+
+//console.log( spotifyKeys );
 
 //=======================
 // USER INPUT
@@ -78,7 +81,41 @@ function getTweets()
 
 function getSpotifySong()
 {
+    spotifyClient = new spotify( spotifyKeys );
 
+    let tempQuery = ""; 
+
+    //build query string
+    for( let i = 3; i < userInputs.length; ++i )
+    {
+        tempQuery += userInputs[i] + " ";
+    }
+
+    //build the params object
+    let tempQeuryParams = 
+    {
+        type: 'track',  
+        query: tempQuery,      
+    };
+    
+    spotifyClient.search( tempQeuryParams, onSpotifyComplete );
+
+    //callback when spotify request is complete
+    function onSpotifyComplete( tError, tData )
+    {
+        if( tError )
+        {
+            console.log( "there was an error with Spotify: " +tError );
+        }
+        else
+        {
+            //console.log( tData.tracks.items[0] );
+            console.log( tData.tracks.items[0].name );
+            console.log( tData.tracks.items[0].album.name );
+            console.log( tData.tracks.items[0].artists[0].name );
+            console.log( tData.tracks.items[0].preview_url );
+        }
+    }
 }
 
 function getMovie()
@@ -104,6 +141,3 @@ function logHelpCommands()
 {
 
 }
-
-
-//console.log( twitterKeys );
