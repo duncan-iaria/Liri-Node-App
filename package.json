@@ -1,0 +1,30 @@
+{
+  "name": "lirhi",
+  "version": "0.0.1",
+  "description": "lirhi will respond to (some) of your commands",
+  "main": "liri.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duncan-iaria/Liri-Node-App.git"
+  },
+  "keywords": [
+    "twitter",
+    "spotify",
+    "liri"
+  ],
+  "author": "duncan iaria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duncan-iaria/Liri-Node-App/issues"
+  },
+  "homepage": "https://github.com/duncan-iaria/Liri-Node-App#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "node-spotify-api": "^1.0.5",
+    "request": "^2.81.0",
+    "twitter": "^1.7.1"
+  }
+}
