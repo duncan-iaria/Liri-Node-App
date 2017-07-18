@@ -121,15 +121,26 @@ function getSpotifySong( tParams )
     {
         if( tError )
         {
-            console.log( "there was an error with Spotify: " +tError );
+            console.log( "there was an error with Spotify: " + tError );
         }
         else
         {
-            //console.log( tData.tracks.items[0] );
-            console.log( tData.tracks.items[0].name );
+            console.log( colors.green( '\n"' + tData.tracks.items[0].name + '"' ) );
             console.log( tData.tracks.items[0].album.name );
-            console.log( tData.tracks.items[0].artists[0].name );
-            console.log( tData.tracks.items[0].preview_url );
+
+            for( let i = 0; i < tData.tracks.items[0].artists.length; ++i )
+            {
+               console.log( tData.tracks.items[0].artists[i].name );
+            }
+
+            if( tData.tracks.items[0].preview_url )
+            {
+                console.log( colors.blue( tData.tracks.items[0].preview_url ) );   
+            }
+            else
+            {
+                console.log( "no preview url available" );
+            }
         }
     }
 }
@@ -195,7 +206,7 @@ function getFile()
 
 function showHelp()
 {
-    console.log( '\nPossible commands are:'.green );
+    console.log( '\nNeed help? Possible commands are:'.green );
     console.log( "\nmy-tweets" );
     console.log( "spotify-this-song \<song name\>" );
     console.log( "movie-this \<movie name\>" );
