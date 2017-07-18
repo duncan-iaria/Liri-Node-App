@@ -8,8 +8,10 @@ const twitter = require( 'twitter' );
 const spotify = require( 'node-spotify-api' );
 const colors = require( 'colors' );
 
+//KEYS
 const twitterKeys = keys.twitterKeys;
 const spotifyKeys = keys.spotifyKeys;
+const movieKeys = keys.movieKeys
 
 //console.log( spotifyKeys );
 
@@ -21,7 +23,7 @@ const userInputs = process.argv;
 //possibe actions
 const myTweets = 'my-tweets';
 const spotifySong = 'spotify-this-song';
-const movieThis = 'moveThis';
+const movieThis = 'movie-this';
 const doWhatItSays = 'do-what-is-says';
 const help = 'help';
 
@@ -83,19 +85,10 @@ function getSpotifySong()
 {
     spotifyClient = new spotify( spotifyKeys );
 
-    let tempQuery = ""; 
-
-    //build query string
-    for( let i = 3; i < userInputs.length; ++i )
-    {
-        tempQuery += userInputs[i] + " ";
-    }
-
-    //build the params object
     let tempQeuryParams = 
     {
         type: 'track',  
-        query: tempQuery,      
+        query: buildSearchQuery(),  //builds search query based on inputs
     };
     
     spotifyClient.search( tempQeuryParams, onSpotifyComplete );
@@ -120,7 +113,40 @@ function getSpotifySong()
 
 function getMovie()
 {
+    let tempUrl = 'http://www.omdbapi.com/?t=' + buildSearchQuery( true ) + '&apikey=' + movieKeys;
 
+    //console.log( tempUrl );
+
+    request.get( tempUrl, onGetMovieComplete );
+
+    function onGetMovieComplete( tError, tResponse, tBody )
+    {
+        //console.log( tResponse.statusCode );
+
+        if( tError )
+        {
+            console.log( "Error when getting movie: " + tError )
+        }
+        else
+        {
+            const tData = JSON.parse( tBody );
+
+            //console.log( tData );
+            console.log( colors.green( "\n" + tData.Title + " (" + tData.Year + ")" ) );
+            console.log( "Filmed in: " + tData.Country );
+            console.log( "Actors: " + tData.Actors );
+            console.log( "\nPlot: " + tData.Plot );
+            console.log( "\nimdb Rating: " + tData.imdbRating );
+
+            for( let i = tData.Ratings.length -1; i >= 0; --i )
+            {
+                if( tData.Ratings[i].Source === "Rotten Tomatoes" )
+                {
+                    console.log( "Rotten Tomatoes Rating: " + tData.Ratings[i].Value );
+                }
+            }
+        }
+    }
 }
 
 function getFile()
@@ -137,7 +163,28 @@ function showHelp()
     console.log( "do-what-it-says" );
 }
 
-function logHelpCommands()
+function buildSearchQuery( tIsMovie = false )
 {
+    let tempQuery = "";
+    let tempSpacer = " ";
+    
+    //if it's a movie - use + instead of a space
+    if( tIsMovie )
+    {
+        //if it's a movie and nothing is defined
+        if( !userInputs[3] )
+        {
+            return "Mr.+Nobody";
+        }
 
+        tempSpacer = "+";
+    }
+
+    for( let i = 3; i < userInputs.length; ++i )
+    {
+        i == userInputs.length - 1 ? tempQuery += userInputs[i] : tempQuery += userInputs[i] + tempSpacer;
+        //tempQuery += userInputs[i] + tempSpacer;
+    }
+
+    return tempQuery;
 }
