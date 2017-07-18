@@ -85,7 +85,7 @@ function getTweets()
     {
         if( !tError )
         {
-            console.log( colors.bold( '\nMY LATEST TWEETS:\n' ) );
+            console.log( colors.blue( '\nMY LATEST TWEETS:\n' ) );
             
             for( let i = 0; i < tData.length; ++i )
             {
@@ -143,8 +143,6 @@ function getMovie( tRequest )
 
     let tempUrl = 'http://www.omdbapi.com/?t=' + tMovieTitle + '&apikey=' + movieKeys;
 
-    //console.log( tempUrl );
-
     request.get( tempUrl, onGetMovieComplete );
 
     function onGetMovieComplete( tError, tResponse, tBody )
@@ -199,8 +197,8 @@ function showHelp()
 {
     console.log( '\nPossible commands are:'.green );
     console.log( "\nmy-tweets" );
-    console.log( "spotify-this-song" );
-    console.log( "movie-this" );
+    console.log( "spotify-this-song \<song name\>" );
+    console.log( "movie-this \<movie name\>" );
     console.log( "do-what-it-says" );
 }
 
