@@ -13,8 +13,6 @@ const twitterKeys = keys.twitterKeys;
 const spotifyKeys = keys.spotifyKeys;
 const movieKeys = keys.movieKeys
 
-//console.log( spotifyKeys );
-
 //=======================
 // USER INPUT
 //=======================
@@ -28,8 +26,15 @@ const movieThis = 'movie-this';
 const doWhatItSays = 'do-what-it-says';
 const help = 'help';
 
+
+//=======================
+// PROGRAM RUN
+//=======================
 processInput();
 
+//=======================
+// INPUT PROCESSING
+//=======================
 function processInput( tCommand = null, tParams = null )
 {   
     let tempCommand = null;
@@ -79,7 +84,6 @@ function getTweets()
     const twitterClient = new twitter( twitterKeys );
 
     twitterClient.get( 'statuses/user_timeline', onTwitterComplete )
-    //console.log( twitterClient );
 
     function onTwitterComplete( tError, tData )
     {
@@ -139,7 +143,7 @@ function getSpotifySong( tParams )
             }
             else
             {
-                console.log( "no preview url available" );
+                console.log( colors.red( "no preview url available :(" ) );
             }
         }
     }
@@ -158,17 +162,15 @@ function getMovie( tRequest )
 
     function onGetMovieComplete( tError, tResponse, tBody )
     {
-        //console.log( tResponse.statusCode );
-
-        if( tError )
+        if( tError || tRequest.statusCode !== 200 )
         {
+            console.log( "Response status code: " + tRequest.statusCode );
             console.log( "Error when getting movie: " + tError )
         }
         else
         {
             const tData = JSON.parse( tBody );
-
-            //console.log( tData );
+            
             console.log( colors.green( "\n" + tData.Title + " (" + tData.Year + ")" ) );
             console.log( "Filmed in: " + tData.Country );
             console.log( "Actors: " + tData.Actors );
