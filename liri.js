@@ -240,3 +240,8 @@ function buildSearchQuery( tIsMovie = false )
 
     return tempQuery;
 }
+
+function logger( )
+{
+
+}
