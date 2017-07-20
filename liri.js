@@ -17,7 +17,9 @@ const movieKeys = keys.movieKeys
 // USER INPUT
 //=======================
 const userInputs = process.argv;
-const randomFilePath = "./random.txt";
+const randomFilePath = './random.txt';
+const logFilePath = './log.txt';
+let isInitialLog = true;
 
 //possibe actions
 const myTweets = 'my-tweets';
@@ -74,6 +76,7 @@ function processInput( tCommand = null, tParams = null )
         case log:
             logger( 'test', 'green' );
             break;
+
         default:
             showHelp();
             break;
@@ -245,7 +248,7 @@ function buildSearchQuery( tIsMovie = false )
     return tempQuery;
 }
 
-function logger( tLog, tColor )
+function logger( tLog, tColor = null )
 {
     if( tColor != null )
     {
@@ -254,5 +257,27 @@ function logger( tLog, tColor )
     else
     {
         console.log( tLog );
+    }
+
+    if( isInitialLog )
+    {
+        tempDate = new Date( Date.now() ).toString();
+        tempSeperator = '\n===========================================================\n';
+
+        tLog = "\nUser Command: " + userInputs[2] + "\nUser Params: " + buildSearchQuery() + "\nData Response:\n" + tLog;
+        tLog = tempSeperator + tempDate + tempSeperator + tLog;
+
+        isInitialLog = false;
+    }
+
+    //add to the log file
+    fs.appendFile( logFilePath, tLog + '\n', onAppendComplete );
+
+    function onAppendComplete( tError )
+    {
+        if( tError )
+        {
+            console.log( colors.red( "Error when writing log file: " + tError ) );
+        }
     }
 }
