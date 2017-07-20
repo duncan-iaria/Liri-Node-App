@@ -17,13 +17,16 @@ const movieKeys = keys.movieKeys
 // USER INPUT
 //=======================
 const userInputs = process.argv;
-const randomFilePath = "./random.txt";
+const randomFilePath = './random.txt';
+const logFilePath = './log.txt';
+let isInitialLog = true;
 
 //possibe actions
 const myTweets = 'my-tweets';
 const spotifySong = 'spotify-this-song';
 const movieThis = 'movie-this';
 const doWhatItSays = 'do-what-it-says';
+const log = 'log-stuff';
 const help = 'help';
 
 
@@ -70,6 +73,10 @@ function processInput( tCommand = null, tParams = null )
             showHelp();
             break;
 
+        case log:
+            logger( 'test', 'green' );
+            break;
+
         default:
             showHelp();
             break;
@@ -89,16 +96,17 @@ function getTweets()
     {
         if( !tError )
         {
-            console.log( colors.blue( '\nMY LATEST TWEETS:\n' ) );
+            logger( '\nMY LATEST TWEETS:\n', 'blue' );
+            //console.log( colors.blue( '\nMY LATEST TWEETS:\n' ) );
             
             for( let i = 0; i < tData.length; ++i )
             {
-                console.log( tData[i].text );    
+                logger( tData[i].text );    
             }
         }
         else
         {
-            console.log( "There was an error with Twitter: " + tError );
+            logger( "There was an error with Twitter: " + tError );
         }
     }
 }
@@ -125,25 +133,25 @@ function getSpotifySong( tParams )
     {
         if( tError )
         {
-            console.log( "there was an error with Spotify: " + tError );
+            logger( "there was an error with Spotify: " + tError );
         }
         else
         {
-            console.log( colors.green( '\n"' + tData.tracks.items[0].name + '"' ) );
-            console.log( tData.tracks.items[0].album.name );
+            logger( '\n"' + tData.tracks.items[0].name + '"', 'green' );
+            logger( tData.tracks.items[0].album.name );
 
             for( let i = 0; i < tData.tracks.items[0].artists.length; ++i )
             {
-               console.log( tData.tracks.items[0].artists[i].name );
+               logger( tData.tracks.items[0].artists[i].name );
             }
 
             if( tData.tracks.items[0].preview_url )
             {
-                console.log( colors.blue( tData.tracks.items[0].preview_url ) );   
+                logger( tData.tracks.items[0].preview_url, 'blue' );   
             }
             else
             {
-                console.log( colors.red( "no preview url available :(" ) );
+                logger( 'no preview url available :(', 'red' );
             }
         }
     }
@@ -162,26 +170,26 @@ function getMovie( tRequest )
 
     function onGetMovieComplete( tError, tResponse, tBody )
     {
-        if( tError || tRequest.statusCode !== 200 )
+        if( tError || tResponse.statusCode !== 200 )
         {
-            console.log( "Response status code: " + tRequest.statusCode );
-            console.log( "Error when getting movie: " + tError )
+            logger( "Response status code: " + tResponse.statusCode, 'red' );
+            logger( "Error when getting movie: " + tError, 'red' )
         }
         else
         {
             const tData = JSON.parse( tBody );
             
-            console.log( colors.green( "\n" + tData.Title + " (" + tData.Year + ")" ) );
-            console.log( "Filmed in: " + tData.Country );
-            console.log( "Actors: " + tData.Actors );
-            console.log( "\nPlot: " + tData.Plot );
-            console.log( "\nimdb Rating: " + tData.imdbRating );
+            logger(  "\n" + tData.Title + " (" + tData.Year + ")", 'green'  );
+            logger( "Filmed in: " + tData.Country );
+            logger( "Actors: " + tData.Actors );
+            logger( "\nPlot: " + tData.Plot );
+            logger( "\nimdb Rating: " + tData.imdbRating, 'blue' );
 
             for( let i = tData.Ratings.length -1; i >= 0; --i )
             {
                 if( tData.Ratings[i].Source === "Rotten Tomatoes" )
                 {
-                    console.log( "Rotten Tomatoes Rating: " + tData.Ratings[i].Value );
+                    logger( "Rotten Tomatoes Rating: " + tData.Ratings[i].Value, 'red' );
                 }
             }
         }
@@ -196,7 +204,7 @@ function getFile()
     {
         if( tError )
         {
-            console.log( "Error reading file: " + tError );
+            logger( "Error reading file: " + tError, 'red' );
         }
         else
         {
@@ -208,11 +216,11 @@ function getFile()
 
 function showHelp()
 {
-    console.log( '\nNeed help? Possible commands are:'.green );
-    console.log( "\nmy-tweets" );
-    console.log( "spotify-this-song \<song name\>" );
-    console.log( "movie-this \<movie name\>" );
-    console.log( "do-what-it-says" );
+    logger( '\nNeed help? Possible commands are:'.green );
+    logger( "\nmy-tweets" );
+    logger( "spotify-this-song \<song name\>" );
+    logger( "movie-this \<movie name\>" );
+    logger( "do-what-it-says" );
 }
 
 function buildSearchQuery( tIsMovie = false )
@@ -235,8 +243,41 @@ function buildSearchQuery( tIsMovie = false )
     for( let i = 3; i < userInputs.length; ++i )
     {
         i == userInputs.length - 1 ? tempQuery += userInputs[i] : tempQuery += userInputs[i] + tempSpacer;
-        //tempQuery += userInputs[i] + tempSpacer;
     }
 
     return tempQuery;
+}
+
+function logger( tLog, tColor = null )
+{
+    if( tColor != null )
+    {
+        console.log( colors[tColor]( tLog ) );
+    }
+    else
+    {
+        console.log( tLog );
+    }
+
+    if( isInitialLog )
+    {
+        tempDate = new Date( Date.now() ).toString();
+        tempSeperator = '\n===========================================================\n';
+
+        tLog = "\nUser Command: " + userInputs[2] + "\nUser Params: " + buildSearchQuery() + "\nData Response:\n" + tLog;
+        tLog = tempSeperator + tempDate + tempSeperator + tLog;
+
+        isInitialLog = false;
+    }
+
+    //add to the log file
+    fs.appendFile( logFilePath, tLog + '\n', onAppendComplete );
+
+    function onAppendComplete( tError )
+    {
+        if( tError )
+        {
+            console.log( colors.red( "Error when writing log file: " + tError ) );
+        }
+    }
 }
